@@ -2,13 +2,21 @@
 
 public partial class AppShell : Shell
 {
-	MainPageViewModel vm;
-	public AppShell(MainPageViewModel vm)
+	MainPage mainPage;
+	SearchPage searchPage;
+
+	public AppShell(
+		MainPage mainPage,
+		SearchPage searchPage)
 	{
-		this.vm = vm;
+		this.mainPage = mainPage;
+		this.searchPage = searchPage;
 		InitializeComponent();		
 	}
-
-	private void Shell_Loaded(object sender, EventArgs e) =>
-		ShellContainer.BindingContext = vm;	
+		
+	private void Shell_Loaded(object sender, EventArgs e)
+	{
+		MainContainer.Content = mainPage.Content;
+		SearchContainer.Content = searchPage.Content;
+	}
 }

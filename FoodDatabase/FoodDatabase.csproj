@@ -60,4 +60,13 @@
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="PowerFoodsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="SearchPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>
