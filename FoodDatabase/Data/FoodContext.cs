@@ -4,10 +4,13 @@ namespace FoodDatabase.Data
 {
     public class FoodContext : DbContext
     {
+        public FoodContext(DbContextOptions<FoodContext> options) : base(options)
+        {
+
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var pathToLocal = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            optionsBuilder.UseSqlite($"Data Source={pathToLocal}{Path.DirectorySeparatorChar}foods.sqlite3");
             optionsBuilder.AddInterceptors(new[] { new SearchDataInterceptor() });
             base.OnConfiguring(optionsBuilder);
         }

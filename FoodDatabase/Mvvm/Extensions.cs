@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
 namespace FoodDatabase.Mvvm
 {
@@ -34,6 +35,14 @@ namespace FoodDatabase.Mvvm
             }
             set(value);
             model.RaisePropertyChanged(propertyName);
+        }
+
+        public static void AddRange<T>(this ObservableCollection<T> target, IEnumerable<T> src)
+        {
+            foreach(T item in src)
+            {
+                target.Add(item);
+            }
         }
     }
 }

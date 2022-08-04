@@ -1,6 +1,7 @@
 ﻿using FoodDatabase.Data;
 using FoodDatabase.ViewModels;
 using FoodDatabase.Mvvm;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDatabase;
 
@@ -9,9 +10,14 @@ public static class MauiProgram
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
-		builder
 
-			.UseMauiApp<App>()
+        var pathToLocal = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+
+
+        builder
+
+            .UseMauiApp<App>()
 
 			.ConfigureFonts(fonts =>
 			{
@@ -19,7 +25,11 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			})
 
-			.Services.AddDbContextFactory<FoodContext>()
+			.Services.AddDbContextFactory<FoodContext>(opts =>
+			{
+				opts.UseSqlite($"Data Source={pathToLocal}{Path.DirectorySeparatorChar}foods.sqlite3");
+				opts.LogTo(Console.WriteLine);
+			})            
 
 			.AddMvvm()
 
@@ -32,6 +42,7 @@ public static class MauiProgram
 			.WithViewModel<SearchViewModel>()
 
 			.AddTransient<PowerFoodsPage>()
+			.WithViewModel<PowerFoodsViewModel>()
 
 			.AddSingleton<DataLoader>();					
 

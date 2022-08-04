@@ -2,7 +2,7 @@
 using FoodDatabase.Mvvm;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Windows.Input;
 
 namespace FoodDatabase.ViewModels
 {
@@ -12,12 +12,13 @@ namespace FoodDatabase.ViewModels
         private string searchText;
         private readonly List<FoundationFood> foundationFoods = new();
         private FoodCategory category = null;
+        private readonly List<FoodCategory> foodCategories = new();
         private Timer debounceTimer;
-        private int busyCount;
-
+        private bool showCategory;
+        
         private string databaseStats = "Computing statistics...";
 
-        public List<FoodCategory> FoodCategories { get; private set; } = new List<FoodCategory>();
+        public List<FoodCategory> FoodCategories => foodCategories.ToList();
 
         public string DatabaseStats
         {
@@ -25,30 +26,28 @@ namespace FoodDatabase.ViewModels
             set => this.NotifySet(svm => svm.DatabaseStats, val => databaseStats = val, value);            
         }
 
+        public string CategoryText => category?.Description;
+
+        public ICommand PowerFoodsNavigation { get; set; } = new NavigationCommand("//PowerFoods");
+
+        public ICommand ShowCategoryCommand { get; private set; }
+
         public ObservableCollection<FoundationFood> FoundationFoods { get; private set; }
-        = new ObservableCollection<FoundationFood>();
-
-        public bool IsBusy { get => busyCount > 0; }
-
-        private void SetBusy()
+            = new ObservableCollection<FoundationFood>();
+       
+        public SearchViewModel(IDbContextFactory<FoodContext> factory) : base(factory) 
         {
-            busyCount++;
-            if (busyCount == 1)
-            {
-                RaisePropertyChanged(nameof(IsBusy));
-            }
+            ShowCategoryCommand = new Command(
+                () =>
+                {
+                    showCategory = true;
+                    RaisePropertyChanged(nameof(ShowCategory));
+                    ((Command)ShowCategoryCommand).ChangeCanExecute();
+                },
+                () => ShowCategory == false);
         }
 
-        public void ResetBusy()
-        {
-            busyCount--;
-            if (busyCount == 0)
-            {
-                RaisePropertyChanged(nameof(IsBusy));
-            }
-        }
-
-        public SearchViewModel(IDbContextFactory<FoodContext> factory) : base(factory) { }
+        public bool ShowCategory => showCategory;        
         
         public async override Task InitAsync()
         {
@@ -62,8 +61,8 @@ namespace FoodDatabase.ViewModels
                 .Select(n => n.Id)
                 .Distinct()
                 .CountAsync();
-            FoodCategories.AddRange(await context.FoodCategories.OrderBy(fc => fc.Description).ToListAsync());
-            category = FoodCategories.First();
+            foodCategories.AddRange(await context.FoodCategories.OrderBy(fc => fc.Description).ToListAsync());
+            category = foodCategories.First();
             RaisePropertyChanged(nameof(FoodCategories));
             RaisePropertyChanged(nameof(Category));
             ResetBusy();
@@ -73,7 +72,16 @@ namespace FoodDatabase.ViewModels
         public FoodCategory Category
         {
             get => category;
-            set => this.NotifySet(svm => svm.Category, val => category = val, value, (p1, p2) => p1 != null && p2 != null && p1.Id == p2.Id);            
+            set => this.NotifySet(svm => svm.Category, val =>
+            {
+                category = val;
+                if (showCategory)
+                {
+                    showCategory = false;
+                    RaisePropertyChanged(nameof(ShowCategory));
+                    ((Command)ShowCategoryCommand).ChangeCanExecute();
+                }
+            }, value, (p1, p2) => p1 != null && p2 != null && p1.Id == p2.Id);            
         }
 
         public string SearchText
@@ -94,6 +102,8 @@ namespace FoodDatabase.ViewModels
                     {
                         FoundationFoods.Clear();
                         RaisePropertyChanged(nameof(FoundationFoods));
+                        RaisePropertyChanged(nameof(HasFoods));
+                        RaisePropertyChanged(nameof(NoFoods));
                     }
                 }
             }
@@ -149,7 +159,7 @@ namespace FoodDatabase.ViewModels
             var context = await factory.CreateDbContextAsync();
             var results = await context.FoundationFoods
                 .Where(ff =>
-                ff.FoodCategory.Id == Category.Id &&
+                ff.FoodCategory.Id == category.Id &&
                 EF.Property<string>(ff, "SearchData")
                 .Contains(search))
                 .OrderBy(ff => ff.Description)

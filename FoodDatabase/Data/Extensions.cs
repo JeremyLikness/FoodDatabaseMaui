@@ -27,12 +27,15 @@ namespace FoodDatabase.Data
 
         public static T GetPropertyWithDefault<T>(this JsonElement element, string propertyName, T defaultValue)
         {
-            if (element.GetProperty(propertyName).ValueKind == JsonValueKind.Null || 
-                element.GetProperty(propertyName).ValueKind == JsonValueKind.Undefined)
+            if (element.TryGetProperty(propertyName, out JsonElement prop))
             {
-                return defaultValue;
+                if (prop.ValueKind == JsonValueKind.Null || prop.ValueKind == JsonValueKind.Undefined)
+                {
+                    return defaultValue;
+                }
+                return GetPropertyAs<T>(element, propertyName);
             }
-            return GetPropertyAs<T>(element, propertyName);
+            return defaultValue;
         }
     }
 }

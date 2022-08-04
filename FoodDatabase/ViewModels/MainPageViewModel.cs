@@ -35,7 +35,8 @@ namespace FoodDatabase.ViewModels
                 IsReady = false;
                 StatusText = "Database check";
                 using var ctx = await factory.CreateDbContextAsync();
-                await ctx.Database.EnsureDeletedAsync();
+                await Task.Run(() => Task.Delay(200));
+                //await ctx.Database.EnsureDeletedAsync();
                 if (await ctx.Database.EnsureCreatedAsync())
                 {
                     StatusText = "Database created";

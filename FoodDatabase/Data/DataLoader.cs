@@ -16,8 +16,8 @@ namespace FoodDatabase.Data
             {
                 var food = new FoundationFood
                 {
-                    FoodClass = item.GetProperty("foodClass").GetString(),
-                    Description = item.GetProperty("description").GetString(),
+                    FoodClass = item.GetPropertyAs<string>("foodClass"),
+                    Description = item.GetPropertyAs<string>("description"),
                     FoodNutrients = new List<FoodNutrient>(),
                     NutrientConversionFactors = new List<NutrientConversionFactor>(),
                     FoodPortions = new List<FoodPortion>(),
@@ -28,7 +28,7 @@ namespace FoodDatabase.Data
                 ParsePortions(measureUnits, item, food.FoodPortions);
                 ParseInputFoods(categories, item, food.InputFoods);
                 var category = item.GetProperty("foodCategory");
-                var description = category.GetProperty("description").GetString();
+                var description = category.GetPropertyAs<string>("description");
                 food.FoodCategory = categories.FirstOrDefault(c => c.Description == description);
                 data.Add(food);
             }
@@ -42,26 +42,26 @@ namespace FoodDatabase.Data
             {
                 var nestedInput = inputElem.GetProperty("inputFood");
                 var catElem = nestedInput.GetProperty("foodCategory");
-                var catId = catElem.GetProperty("id").GetInt32();
+                var catId = catElem.GetPropertyAs<int>("id");
                 var category = categories.FirstOrDefault(c => c.Id == catId);
                 if (category == null)
                 {
                     category = new FoodCategory()
                     {
                         Id = catId,
-                        Code = catElem.GetProperty("code").GetString(),
-                        Description = catElem.GetProperty("description").GetString()
+                        Code = catElem.GetPropertyAs<string>("code"),
+                        Description = catElem.GetPropertyAs<string>("description")
                     };
                     categories.Add(category);
                 }
                 var inputFood = new InputFood()
                 {
-                    Id = inputElem.GetProperty("id").GetInt32(),
-                    FoodClass = nestedInput.GetProperty("foodClass").GetString(),
+                    Id = inputElem.GetPropertyAs<int>("id"),
+                    FoodClass = nestedInput.GetPropertyAs<string>("foodClass"),
                     FoodCategory = category,
-                    Description = inputElem.GetProperty("foodDescription").GetString(),
-                    FdcId = nestedInput.GetProperty("fdcId").GetInt32(),
-                    DataType = nestedInput.GetProperty("dataType").GetString()
+                    Description = inputElem.GetPropertyAs<string>("foodDescription"),
+                    FdcId = nestedInput.GetPropertyAs<int>("fdcId"),
+                    DataType = nestedInput.GetPropertyAs<string>("dataType")
                 };
                 inputFoods.Add(inputFood);
             }            
@@ -73,33 +73,29 @@ namespace FoodDatabase.Data
             foreach (var portionElem in portionElements.EnumerateArray())
             {
                 var measureElem = portionElem.GetProperty("measureUnit");
-                var measureId = measureElem.GetProperty("id").GetInt32();
+                var measureId = measureElem.GetPropertyAs<int>("id");
                 var measure = measureUnits.FirstOrDefault(mu => mu.Id == measureId);
                 if (measure == null)
                 {
                     measure = new MeasureUnit
                     {
                         Id = measureId,
-                        Name = measureElem.GetProperty("name").GetString(),
-                        Abbreviation = measureElem.GetProperty("abbreviation").GetString()
+                        Name = measureElem.GetPropertyAs<string>("name"),
+                        Abbreviation = measureElem.GetPropertyAs<string>("abbreviation")
                     };
                     measureUnits.Add(measure);
                 }
                 var portion = new FoodPortion
                 {
-                    Id = portionElem.GetProperty("id").GetInt32(),
-                    MeasureUnit = measure
+                    Id = portionElem.GetPropertyAs<int>("id"),
+                    MeasureUnit = measure,
+                    PortionDescription = portionElem.GetPropertyWithDefault("portionDescription", string.Empty),
+                    Modifier = portionElem.GetPropertyWithDefault("modifier", string.Empty),
+                    GramWeight = portionElem.GetPropertyWithDefault("gramWeight", (double)0),
+                    SequenceNumber = portionElem.GetPropertyWithDefault("sequenceNumber", int.MaxValue),
+                    MinYearAcquired = portionElem.GetPropertyWithDefault("minYearAcquired", DateTime.Now.Year)
                 };
-                GetIf(portionElem, "portionDescription",
-                    elem => portion.PortionDescription = elem.GetString());
-                GetIf(portionElem, "modifier",
-                    elem => portion.Modifier = elem.GetString());
-                GetIf(portionElem, "gramWeight",
-                                    elem => portion.GramWeight = elem.GetDouble());
-                GetIf(portionElem, "sequenceNumber",
-                                    elem => portion.SequenceNumber = elem.GetInt32());
-                GetIf(portionElem, "minYearAcquired",
-                                    elem => portion.MinYearAcquired = elem.GetInt32());
+
                 foodPortions.Add(portion);
             }
         }
@@ -111,29 +107,15 @@ namespace FoodDatabase.Data
             {
                 var newFactor = new NutrientConversionFactor
                 {
-                    Type = factor.GetProperty("type").GetString()
+                    Type = factor.GetProperty("type").GetString(),
+                    ProteinValue = factor.GetPropertyWithDefault("proteinValue", (double)0),
+                    FatValue = factor.GetPropertyWithDefault("fatValue", (double)0),
+                    CarbohydrateValue = factor.GetPropertyWithDefault("carbohydrateValue", (double)0),
+                    Value = factor.GetPropertyWithDefault("value", (double)0),
                 };
 
-                GetIf(factor, "proteinValue", elem => newFactor.ProteinValue = elem.GetDouble());
-                GetIf(factor, "fatValue", elem => newFactor.FatValue = elem.GetDouble());
-                GetIf(factor, "carbohydrateValue", elem => newFactor.CarbohydrateValue = elem.GetDouble());
-                GetIf(factor, "value", elem => newFactor.Value = elem.GetDouble());
                 nutrientConversionFactors.Add(newFactor);
             }
-        }
-
-        private static bool GetIf(
-            JsonElement elem,
-            string propertyName,
-            Action<JsonElement> assign)
-        {
-            if (elem.TryGetProperty(propertyName, out JsonElement property))
-            {
-                assign(property);
-                return true;
-            }
-
-            return false;
         }
 
         private static void ParseNutrients(List<Nutrient> nutrients, JsonElement item, List<FoodNutrient> foodNutrients)
@@ -141,48 +123,36 @@ namespace FoodDatabase.Data
             var src = item.GetProperty("foodNutrients");
             foreach (var srcItem in src.EnumerateArray())
             {
-                var foodNutrientId = srcItem.GetProperty("id").GetInt32();
+                var foodNutrientId = srcItem.GetPropertyAs<int>("id");
                 var nutrientElem = srcItem.GetProperty("nutrient");
                 if (nutrientElem.ValueKind == JsonValueKind.Null)
                 {
                     return;
                 }
-                var id = nutrientElem.GetProperty("id").GetInt32();
+                var id = nutrientElem.GetPropertyAs<int>("id");
                 var nutrient = nutrients.FirstOrDefault(n => n.Id == id);
                 if (nutrient == null)
                 {
                     nutrient = new Nutrient
                     {
                         Id = id,
-                        Number = nutrientElem.GetProperty("number").GetString(),
-                        Name = nutrientElem.GetProperty("name").GetString(),
-                        Rank = nutrientElem.GetProperty("rank").GetInt32()
+                        Number = nutrientElem.GetPropertyAs<string>("number"),
+                        Name = nutrientElem.GetPropertyAs<string>("name"),
+                        Rank = nutrientElem.GetPropertyAs<int>("rank"),
+                        UnitName = nutrientElem.GetPropertyWithDefault("unitName", "??")
                     };
 
-                    GetIf(nutrientElem,
-                        "unitName",
-                        prop => nutrient.UnitName = prop.GetString());
                     nutrients.Add(nutrient);
                 }
                 var foodNutrient = new FoodNutrient
                 {
                     Id = foodNutrientId,
-                    Type = srcItem.GetProperty("type").GetString(),
+                    Type = srcItem.GetPropertyAs<string>("type"),
                     Nutrient = nutrient,
-                };
-
-                GetIf(srcItem,
-                    "dataPoints",
-                    prop => foodNutrient.DataPoints = prop.GetInt32());
-
-                GetIf(srcItem,
-                    "median",
-                    prop => foodNutrient.Median = prop.GetDouble());
-
-                GetIf(srcItem,
-                    "amount",
-                    prop => foodNutrient.Amount = prop.GetDouble());
-
+                    DataPoints = srcItem.GetPropertyWithDefault("dataPoints", 0),
+                    Median = srcItem.GetPropertyWithDefault("median", (double)0),
+                    Amount = srcItem.GetPropertyWithDefault("amount", (double)0)
+                };                
                 foodNutrients.Add(foodNutrient);
             }
         }
