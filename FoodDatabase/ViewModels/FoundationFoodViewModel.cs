@@ -25,13 +25,12 @@ namespace FoodDatabase.ViewModels
 
         public FoundationFoodViewModel(IDbContextFactory<FoodContext> factory) : base(factory)
         {
-
         }
 
-        public FoodNutrient NutrientByName(string name, bool startsWith = false) =>
-            startsWith 
+        public FoodNutrient NutrientByName(string name, bool contains = false) =>
+            contains
             ? Food?.FoodNutrients
-                .Where(fn => fn.Nutrient.Name.StartsWith(name))
+                .Where(fn => fn.Nutrient.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(fn => fn.Nutrient.Rank).FirstOrDefault() 
             : Food?.FoodNutrients
                 .Where(fn => fn.Nutrient.Name == name)
@@ -41,12 +40,11 @@ namespace FoodDatabase.ViewModels
         public FoodNutrient Fat => NutrientByName("Total fat", true);
         public FoodNutrient SaturatedFat => NutrientByName("Fatty acids, total saturated");
         public FoodNutrient TransFat => NutrientByName("Fatty acids, total trans");
-        public FoodNutrient Cholesterol => NutrientByName("Cholesterol");
+        public FoodNutrient Cholesterol => NutrientByName("Cholesterol",  true);
         public FoodNutrient Sodium => NutrientByName("Sodium", true);
-        public FoodNutrient Carbohydrate => NutrientByName("Carbohydate", true);
-        public FoodNutrient SolubleFiber => NutrientByName("Fiber, soluble");
-        public FoodNutrient InsolubleFiber => NutrientByName("Fiber, insoluble");
-        public FoodNutrient Sugars => NutrientByName("Sugars, total");
+        public FoodNutrient Carbohydrate => NutrientByName("Carbohydrate", true);
+        public FoodNutrient Fiber => NutrientByName("Fiber, total", true);
+        public FoodNutrient Sugars => NutrientByName("Sugars, Total", true);
         public FoodNutrient Protein => NutrientByName("Protein", true);
         public FoodNutrient VitaminD => NutrientByName("Vitamin D", true);
         public FoodNutrient Iron => NutrientByName("Iron", true);
@@ -59,17 +57,17 @@ namespace FoodDatabase.ViewModels
         public FoodNutrient Niacin => NutrientByName("Niacin", true);
         public FoodNutrient Zinc => NutrientByName("Zinc", true);
 
-        public override async Task InitAsync()
+        public override void Init()
         {
             if (Food == null || Food.Id != FoodId)
             {
-                using var ctx = await factory.CreateDbContextAsync();
-                Food = await ctx.FoundationFoods
+                using var ctx = factory.CreateDbContext();
+                Food = ctx.FoundationFoods
                     .Include(ff => ff.FoodNutrients)
                     .ThenInclude(fn => fn.Nutrient)
                     .Include(ff => ff.FoodPortions)
                     .ThenInclude(fp => fp.MeasureUnit)
-                    .SingleOrDefaultAsync(ff => ff.Id == FoodId);
+                    .SingleOrDefault(ff => ff.Id == FoodId);
             }
             RaisePropertyChanged(string.Empty);
         }
@@ -79,7 +77,7 @@ namespace FoodDatabase.ViewModels
             FoodId = foodId;
             BackCommand = new NavigationCommand(returnRoute);
             await Shell.Current.GoToAsync("//Food");
-            await InitAsync();
+            Init();
         }
     }
 }

@@ -28,19 +28,17 @@ namespace FoodDatabase.ViewModels
             set => this.NotifySet(vm => vm.IsReady, val => ready = val, value);
         }
 
-        public async override Task InitAsync()
+        public override void Init()
         {
             if (!initialized)
             {
                 IsReady = false;
                 StatusText = "Database check";
-                using var ctx = await factory.CreateDbContextAsync();
-                await Task.Run(() => Task.Delay(200));
-                //await ctx.Database.EnsureDeletedAsync();
-                if (await ctx.Database.EnsureCreatedAsync())
+                using var ctx = factory.CreateDbContext();
+                if (ctx.Database.EnsureCreated())
                 {
                     StatusText = "Database created";
-                    await DeserializeAsync();
+                    Deserialize();
                 }
                 else
                 {
@@ -50,26 +48,26 @@ namespace FoodDatabase.ViewModels
             }
             IsReady = true;
             StatusText = "Navigating to main page";
-            await Shell.Current.GoToAsync("//Search");
+            Shell.Current.GoToAsync("//Search");
         }        
 
-        private async Task DeserializeAsync()
+        private void Deserialize()
         {
             StatusText = "Deserializing data";
             var manifestStreamPath = $"{typeof(FoodContext).Namespace}.foodData.json";
             using var stream = typeof(FoodContext).Assembly.GetManifestResourceStream(manifestStreamPath);
-            var doc = await JsonDocument.ParseAsync(stream);
+            var doc = JsonDocument.Parse(stream);
             StatusText = "Parsing";
             var data = loader.Parse(doc);
             StatusText = "Saving to database";
-            await SaveAsync(data);
+            Save(data);
         }
 
-        private async Task SaveAsync(List<FoundationFood> data)
+        private void Save(List<FoundationFood> data)
         {
-            using var ctx = await factory.CreateDbContextAsync();
+            using var ctx = factory.CreateDbContext();
             ctx.FoundationFoods.AddRange(data);
-            await ctx.SaveChangesAsync();
+            ctx.SaveChanges();
             StatusText = "Database seeded";
         }
     }

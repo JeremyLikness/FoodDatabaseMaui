@@ -8,9 +8,9 @@
         <local:FoodNutrientValueConverter x:Key="FoodNutrient"/>
     </ContentPage.Resources>
     <VerticalStackLayout>
-        <Button Text="🔙 Go back" Command="{Binding BackCommand}"></Button>
-        <Border BackgroundColor="White" Background="Transparent" StrokeThickness="3" Padding="5" WidthRequest="620">
-            <Grid WidthRequest="600" Background="White" Grid.RowSpacing="1" Grid.ColumnSpacing="1">
+        <Button Text="🔙 Go back" Command="{Binding BackCommand}" HorizontalOptions="Start" Margin="5,5,5,5"></Button>
+        <Border BackgroundColor="White" Background="Transparent" StrokeThickness="3" Padding="5" HorizontalOptions="Center" VerticalOptions="Center">
+            <Grid MaximumWidthRequest="600" Background="White" Grid.RowSpacing="1" Grid.ColumnSpacing="1" HorizontalOptions="Center" VerticalOptions="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -34,8 +34,8 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Label TextColor="White"  
                     HorizontalTextAlignment="Center"
@@ -95,10 +95,8 @@
                 <Label TextColor="White"  Background="Black" Grid.Row="9" Grid.Column="1" Text="{Binding Sodium, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
                 <Label TextColor="White"  Background="Black" Grid.Row="10" Text="Total Carbohydrate" FontSize="Medium"/>
                 <Label TextColor="White"  Background="Black" Grid.Row="10" Grid.Column="1" Text="{Binding Carbohydrate, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
-                <Label TextColor="White"  Background="Black" Grid.Row="11" Text="Insoluble fiber"/>
-                <Label TextColor="White"  Background="Black" Grid.Row="11" Grid.Column="1" Text="{Binding InsolubleFiber, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
-                <Label  Background="Black" Grid.Row="12" TextColor="White" Text="Soluble fiber"/>
-                <Label TextColor="White"  Background="Black" Grid.Row="12" Grid.Column="1" Text="{Binding SolubleFiber, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="11" Text="Fiber"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="11" Grid.Column="1" Text="{Binding Fiber, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
                 <Label TextColor="White"  Background="Black" Grid.Row="13" Text="Total sugars"/>
                 <Label TextColor="White"  Background="Black" Grid.Row="13" Grid.Column="1" Text="{Binding Sugars, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
                 <Label TextColor="White"  Background="Black" Grid.Row="14" Text="Protein" FontSize="Medium"/>

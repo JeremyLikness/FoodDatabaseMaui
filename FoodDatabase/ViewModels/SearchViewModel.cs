@@ -54,19 +54,20 @@ namespace FoodDatabase.ViewModels
 
         public bool ShowCategory => showCategory;        
         
-        public async override Task InitAsync()
+        public override void Init()
         {
-          SetBusy();
-            using var context = await factory.CreateDbContextAsync();
-        var count = await context.FoundationFoods.CountAsync();
-        var nutrientsCount = await context.FoundationFoods
-            .SelectMany(f => f.FoodNutrients)
-            .Select(fn => fn.Nutrient)
-            .Where(n => n != null)
-            .Select(n => n.Id)
-            .Distinct()
-            .CountAsync();
-        foodCategories.AddRange(await context.FoodCategories.OrderBy(fc => fc.Description).ToListAsync());
+            SetBusy();
+            using var context = factory.CreateDbContext();
+            var count = context.FoundationFoods.Count();
+            var nutrientsCount = context.FoundationFoods
+                .SelectMany(f => f.FoodNutrients)
+                .Select(fn => fn.Nutrient)
+                .Where(n => n != null)
+                .Select(n => n.Id)
+                .Distinct()
+                .Count();
+        foodCategories.AddRange(
+            context.FoodCategories.OrderBy(fc => fc.Description));
         category = foodCategories.First();
         RaisePropertyChanged(nameof(FoodCategories));
         RaisePropertyChanged(nameof(Category));
@@ -146,7 +147,7 @@ namespace FoodDatabase.ViewModels
             if (!string.IsNullOrWhiteSpace(searchText) &&
                 searchText.Length >= 3)
             {
-                base.Dispatch(async () => await SearchAsync());
+                base.Dispatch(Search);
             }
             else
             {
@@ -155,20 +156,20 @@ namespace FoodDatabase.ViewModels
             }
         }
 
-        private async Task SearchAsync()
+        private void Search()
         {
             var search = searchText.Trim().ToLowerInvariant();
             SetBusy();
             FoundationFoods.Clear();
             RaisePropertyChanged(nameof(FoundationFoods));
-            var context = await factory.CreateDbContextAsync();
-            var results = await context.FoundationFoods
+            var context = factory.CreateDbContext();
+            var results = context.FoundationFoods
                 .Where(ff =>
                 ff.FoodCategory.Id == category.Id &&
                 EF.Property<string>(ff, "SearchData")
                 .Contains(search))
                 .OrderBy(ff => ff.Description)
-                .ToListAsync();
+                .ToList();
             foreach (var result in results)
             {
                 FoundationFoods.Add(result);

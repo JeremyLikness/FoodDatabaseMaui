@@ -2,7 +2,7 @@
 {
     public interface IViewModel
     {
-        Task InitAsync();
+        void Init();
         Action<Action> Dispatch { get; }
         void SetDispatcher(Action<Action> dispatch);
         void RaisePropertyChanged(string propertyName);

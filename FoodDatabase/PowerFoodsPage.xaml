@@ -82,7 +82,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Button HorizontalOptions="Start"
-                                VerticalOptions="Center" Text="View" Margin="5,5,5,5" 
+                                VerticalOptions="Center" Text="View"  
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.FoodCommand}"
                                 CommandParameter="{Binding Id}"/>
                         <Label Text="{Binding Description}" Grid.Column="1" VerticalOptions="Center"/>

@@ -9,12 +9,12 @@
             host.Loaded += Host_Loaded;
         }
 
-        private async void Host_Loaded(object sender, EventArgs e)
+        private void Host_Loaded(object sender, EventArgs e)
         {
             if (sender is VisualElement element)
             {
                 element.Loaded -= Host_Loaded;
-                await ((IViewModel)element.BindingContext).InitAsync();
+                ((IViewModel)element.BindingContext).Init();
             }
         }
     }

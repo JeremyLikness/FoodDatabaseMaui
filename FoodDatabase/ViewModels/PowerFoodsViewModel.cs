@@ -56,7 +56,7 @@ namespace FoodDatabase.ViewModels
                     RaisePropertyChanged(nameof(Nutrients));
                     RaisePropertyChanged(nameof(IsSelecting));
                     RaisePropertyChanged(nameof(IsNotSelecting));
-                    Dispatch(async () => await RefreshFoodsAsync());
+                    Dispatch(RefreshFoods);
                 }
             }
         }
@@ -80,21 +80,21 @@ namespace FoodDatabase.ViewModels
                 RaisePropertyChanged(nameof(Nutrients));
                 RaisePropertyChanged(nameof(IsSelecting));
                 RaisePropertyChanged(nameof(IsNotSelecting));
-                Dispatch(async () => await RefreshFoodsAsync());
+                Dispatch(RefreshFoods);
             }
         }
 
-        public override async Task InitAsync()
+        public override void Init()
         {
-            using var ctx = await factory.CreateDbContextAsync();
+            using var ctx = factory.CreateDbContext();
             SetBusy();
-            nutrients.AddRange(await ctx.Nutrients.OrderBy(n => n.Name).ToListAsync());
+            nutrients.AddRange(ctx.Nutrients.OrderBy(n => n.Name).ToList());
             SelectedNutrient = nutrients.First();
             ResetBusy();
-            await RefreshFoodsAsync();
+            RefreshFoods();
         }
 
-        public async Task RefreshFoodsAsync()
+        public void RefreshFoods()
         {
             if (SelectedNutrient == null)
             {
@@ -105,7 +105,7 @@ namespace FoodDatabase.ViewModels
             
             PowerFoods.Clear();
             
-            using var ctx = await factory.CreateDbContextAsync();
+            using var ctx = factory.CreateDbContext();
             
             var powerFoods = ctx.FoundationFoods
                 .Include(ff => ff.FoodNutrients)
@@ -127,7 +127,7 @@ namespace FoodDatabase.ViewModels
                 Unit = r.fn.Nutrient.UnitName
             });
             
-            PowerFoods.AddRange(await powerFoods.ToListAsync());            
+            PowerFoods.AddRange(powerFoods.ToList());            
             RaisePropertyChanged(nameof(PowerFoods));
             ResetBusy();
         }

@@ -8,7 +8,7 @@ namespace FoodDatabase.Mvvm
 
         public virtual Action<Action> Dispatch { get; private set; }
 
-        public abstract Task InitAsync();
+        public abstract void Init();
 
         public void SetDispatcher(Action<Action> dispatch) => Dispatch = dispatch;
 
