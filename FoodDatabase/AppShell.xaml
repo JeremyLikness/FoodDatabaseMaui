@@ -20,4 +20,9 @@
         ContentTemplate="{DataTemplate local:PowerFoodsPage}"        
         Title="Power Foods"
         Route="PowerFoods"/>
+    <ShellContent 
+        x:Name="FoodsContainer"
+        ContentTemplate="{DataTemplate local:FoodPage}"        
+        Title="Food Nutrition Facts"
+        Route="Food"/>
 </Shell>

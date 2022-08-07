@@ -32,11 +32,10 @@ namespace FoodDatabase.Data
             {
                 a.Property<int>("Id");
                 a.HasKey("Id");
-            }); 
+            });
 
             ff.OwnsMany(ff => ff.FoodPortions)
-                .HasOne(fp => fp.MeasureUnit)
-                .WithMany();
+                .HasOne(fp => fp.MeasureUnit);                
             
             modelBuilder.Entity<InputFood>()
                 .HasOne(inf => inf.FoodCategory);

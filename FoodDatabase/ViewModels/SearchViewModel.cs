@@ -32,10 +32,12 @@ namespace FoodDatabase.ViewModels
 
         public ICommand ShowCategoryCommand { get; private set; }
 
+        public ICommand FoodCommand { get; private set; }
+
         public ObservableCollection<FoundationFood> FoundationFoods { get; private set; }
             = new ObservableCollection<FoundationFood>();
        
-        public SearchViewModel(IDbContextFactory<FoodContext> factory) : base(factory) 
+        public SearchViewModel(IDbContextFactory<FoodContext> factory, FoundationFoodViewModel vm) : base(factory) 
         {
             ShowCategoryCommand = new Command(
                 () =>
@@ -45,29 +47,32 @@ namespace FoodDatabase.ViewModels
                     ((Command)ShowCategoryCommand).ChangeCanExecute();
                 },
                 () => ShowCategory == false);
+            FoodCommand = new Command(
+                (object id) => _ = vm.ShowFoodAsync((int)id, "//Search"),
+                _ => true);
         }
 
         public bool ShowCategory => showCategory;        
         
         public async override Task InitAsync()
         {
-            SetBusy();
+          SetBusy();
             using var context = await factory.CreateDbContextAsync();
-            var count = await context.FoundationFoods.CountAsync();
-            var nutrientsCount = await context.FoundationFoods
-                .SelectMany(f => f.FoodNutrients)
-                .Select(fn => fn.Nutrient)
-                .Where(n => n != null)
-                .Select(n => n.Id)
-                .Distinct()
-                .CountAsync();
-            foodCategories.AddRange(await context.FoodCategories.OrderBy(fc => fc.Description).ToListAsync());
-            category = foodCategories.First();
-            RaisePropertyChanged(nameof(FoodCategories));
-            RaisePropertyChanged(nameof(Category));
-            ResetBusy();
-            DatabaseStats = $"{count} food items and {nutrientsCount} nutrients found.";
-        }
+        var count = await context.FoundationFoods.CountAsync();
+        var nutrientsCount = await context.FoundationFoods
+            .SelectMany(f => f.FoodNutrients)
+            .Select(fn => fn.Nutrient)
+            .Where(n => n != null)
+            .Select(n => n.Id)
+            .Distinct()
+            .CountAsync();
+        foodCategories.AddRange(await context.FoodCategories.OrderBy(fc => fc.Description).ToListAsync());
+        category = foodCategories.First();
+        RaisePropertyChanged(nameof(FoodCategories));
+        RaisePropertyChanged(nameof(Category));
+        ResetBusy();
+        DatabaseStats = $"{count} food items and {nutrientsCount} nutrients found.";
+    }
 
         public FoodCategory Category
         {

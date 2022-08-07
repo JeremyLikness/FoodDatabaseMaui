@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace FoodDatabase.Data
+﻿namespace FoodDatabase.Data
 {
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class FoodCategory
@@ -10,6 +8,8 @@ namespace FoodDatabase.Data
         public string Code { get; set; }
         public List<FoundationFood> FoundationFoods { get; set; }
             = new List<FoundationFood>();
+
+        public override string ToString() => Description;        
     }
 
     public class FoodNutrient
@@ -22,6 +22,8 @@ namespace FoodDatabase.Data
         public double Amount { get; set; }
         public double? Max { get; set; }
         public double? Min { get; set; }
+
+        public override string ToString() => $"{Nutrient?.Name} {Amount}{Nutrient?.UnitName}";
     }
     
     public class FoodPortion
@@ -70,6 +72,8 @@ namespace FoodDatabase.Data
         public int Id { get; set; }
         public string Name { get; set; }
         public string Abbreviation { get; set; }
+
+        public override string ToString() => Name;
     }
 
     public class Nutrient
@@ -79,6 +83,8 @@ namespace FoodDatabase.Data
         public string Name { get; set; }
         public int Rank { get; set; }
         public string UnitName { get; set; }
+
+        public override string ToString() => $"{Name} ({UnitName})";
     }
 
     public class NutrientConversionFactor

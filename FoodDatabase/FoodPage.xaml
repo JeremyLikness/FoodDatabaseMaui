@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FoodDatabase"
+             x:Class="FoodDatabase.FoodPage"
+             Title="FoodPage">
+    <ContentPage.Resources>
+        <local:FoodNutrientValueConverter x:Key="FoodNutrient"/>
+    </ContentPage.Resources>
+    <VerticalStackLayout>
+        <Button Text="🔙 Go back" Command="{Binding BackCommand}"></Button>
+        <Border BackgroundColor="White" Background="Transparent" StrokeThickness="3" Padding="5" WidthRequest="620">
+            <Grid WidthRequest="600" Background="White" Grid.RowSpacing="1" Grid.ColumnSpacing="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Label TextColor="White"  
+                    HorizontalTextAlignment="Center"
+                    Background="Black"
+                Grid.ColumnSpan="2"
+                Text="{Binding Food.Description}"
+                FontSize="Subtitle"
+                VerticalOptions="Center" 
+                HorizontalOptions="Fill" />
+                <Label TextColor="White"  
+                    Background="Black"                                        
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Text="Nutrition Facts"
+                    HorizontalTextAlignment="Center"
+                FontSize="Subtitle"
+                VerticalOptions="Center" 
+                HorizontalOptions="Fill" />
+                <Label TextColor="White" 
+                    Background="Black"
+                Grid.Row="2"
+                Text="Serving size"/>
+                <HorizontalStackLayout                    
+                Grid.Row="2"
+                Grid.Column="1"
+                    Background="Black"                    
+                HorizontalOptions="Fill"
+                    FlowDirection="RightToLeft">
+                    <Label TextColor="White"  Text="g"/>
+                    <Label TextColor="White"  Text="{Binding Food.FoodPortions[0].GramWeight}"/>
+                    <Label TextColor="White"  Text="/"/>
+                    <Label TextColor="White"  Text="{Binding Food.FoodPortions[0].MeasureUnit.Name}"/>
+                    <Label TextColor="White"  Text="1 "/>
+                </HorizontalStackLayout>
+                <Label TextColor="White"  Background="Black" Grid.Row="3" Text="Amount per serving"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="4" Text="Calories" FontSize="Large"/>
+                <Label TextColor="White"  
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                    HorizontalTextAlignment="End"
+                    VerticalTextAlignment="End"
+                    Background="Black"
+                Grid.Row="3" 
+                Grid.Column="1" 
+                Grid.RowSpan="2" 
+                FontSize="Large" 
+                Text="{Binding Calories.Amount}"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="5" Text="Total Fat" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="5" Grid.Column="1" Text="{Binding Fat, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="6" Text="Saturated fat"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="6" Grid.Column="1" Text="{Binding SaturatedFat, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="7" Text="Trans fat"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="7" Grid.Column="1" Text="{Binding TransFat, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="8" Text="Cholesterol" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="8" Grid.Column="1" Text="{Binding Cholesterol, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="9" Text="Sodium" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="9" Grid.Column="1" Text="{Binding Sodium, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="10" Text="Total Carbohydrate" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="10" Grid.Column="1" Text="{Binding Carbohydrate, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="11" Text="Insoluble fiber"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="11" Grid.Column="1" Text="{Binding InsolubleFiber, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label  Background="Black" Grid.Row="12" TextColor="White" Text="Soluble fiber"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="12" Grid.Column="1" Text="{Binding SolubleFiber, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="13" Text="Total sugars"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="13" Grid.Column="1" Text="{Binding Sugars, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="14" Text="Protein" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="14" Grid.Column="1" Text="{Binding Protein, Converter={StaticResource FoodNutrient}}" HorizontalTextAlignment="End" FontSize="Medium"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="15" Text="{Binding VitaminD}"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="15" Grid.Column="1" Text="{Binding Calcium}" HorizontalOptions="Fill"
+                       HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="16" Text="{Binding Iron}" HorizontalOptions="Fill"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="16" Grid.Column="1" Text="{Binding Potassium}" HorizontalOptions="Fill"
+                       HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="17" Text="{Binding VitaminA}" HorizontalOptions="Fill"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="17" Grid.Column="1" Text="{Binding Thiamin}" HorizontalOptions="Fill" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="18" Text="{Binding Riboflavin}"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="18" Grid.Column="1" Text="{Binding Niacin}" HorizontalTextAlignment="End"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="19" Text="{Binding VitaminB6}"/>
+                <Label TextColor="White"  Background="Black" Grid.Row="19" Grid.Column="1" Text="{Binding Zinc}" HorizontalTextAlignment="End"/>
+            </Grid>
+        </Border>
+    </VerticalStackLayout>
+</ContentPage>

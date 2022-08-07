@@ -12,10 +12,14 @@ namespace FoodDatabase.ViewModels
         private readonly List<Nutrient> nutrients = new ();
         private string nutrientSelection = string.Empty;
 
-        public PowerFoodsViewModel(IDbContextFactory<FoodContext> factory) : base(factory)
+        public PowerFoodsViewModel(IDbContextFactory<FoodContext> factory, FoundationFoodViewModel vm) : base(factory)
         {
-
+            FoodCommand = new Command(
+                (object id) => _ = vm.ShowFoodAsync((int)id, "//PowerFoods"),
+                _ => true);
         }
+
+        public ICommand FoodCommand { get; private set; }
 
         public ICommand SearchNavigation { get; private set; } = new NavigationCommand("//Search");
 
@@ -51,12 +55,14 @@ namespace FoodDatabase.ViewModels
                     RaisePropertyChanged(nameof(NutrientSearch));
                     RaisePropertyChanged(nameof(Nutrients));
                     RaisePropertyChanged(nameof(IsSelecting));
+                    RaisePropertyChanged(nameof(IsNotSelecting));
                     Dispatch(async () => await RefreshFoodsAsync());
                 }
             }
         }
 
         public bool IsSelecting => !string.IsNullOrWhiteSpace(nutrientSelection) && nutrientSelection.Trim().Length >= 3;
+        public bool IsNotSelecting => !IsSelecting;
         
         public Nutrient SelectedNutrient
         {
@@ -73,6 +79,7 @@ namespace FoodDatabase.ViewModels
                 RaisePropertyChanged(nameof(SelectedNutrient));
                 RaisePropertyChanged(nameof(Nutrients));
                 RaisePropertyChanged(nameof(IsSelecting));
+                RaisePropertyChanged(nameof(IsNotSelecting));
                 Dispatch(async () => await RefreshFoodsAsync());
             }
         }

@@ -13,8 +13,6 @@ public static class MauiProgram
 
         var pathToLocal = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-
-
         builder
 
             .UseMauiApp<App>()
@@ -43,6 +41,9 @@ public static class MauiProgram
 
 			.AddTransient<PowerFoodsPage>()
 			.WithViewModel<PowerFoodsViewModel>()
+
+			.AddTransient<FoodPage>()
+			.WithViewModel<FoundationFoodViewModel>()
 
 			.AddSingleton<DataLoader>();					
 

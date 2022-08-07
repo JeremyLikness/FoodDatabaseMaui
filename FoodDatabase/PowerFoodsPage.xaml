@@ -67,6 +67,7 @@
         <CollectionView 
             Grid.Row="2"
             Grid.ColumnSpan="2"
+            IsVisible="{Binding IsNotSelecting}"
             ItemsSource="{Binding PowerFoods}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -75,13 +76,18 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Text="{Binding Description}"/>
-                        <Label Text="{Binding Amount}" Grid.Column="1"/>
-                        <Label Margin="5,0,0,0" Text="{Binding Unit}" Grid.Column="2"/>
+                        <Button HorizontalOptions="Start"
+                                VerticalOptions="Center" Text="View" Margin="5,5,5,5" 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.FoodCommand}"
+                                CommandParameter="{Binding Id}"/>
+                        <Label Text="{Binding Description}" Grid.Column="1" VerticalOptions="Center"/>
+                        <Label Text="{Binding Amount}" Grid.Column="2" VerticalOptions="Center"/>
+                        <Label Margin="5,0,0,0" Text="{Binding Unit}" Grid.Column="3" VerticalOptions="Center"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
